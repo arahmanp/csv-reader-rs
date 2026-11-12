@@ -36,10 +36,27 @@ fn main() -> ExitCode {
         return ExitCode::FAILURE;
     }
 
-    let data: Vec<&str> = content.lines().collect();
+    let content: Vec<&str> = content.lines().collect();
 
-    for line in data {
-        println!("{line}");
+    let header: Vec<&str> = content[0].split(',').collect();
+
+    let mut body: Vec<Vec<&str>> = Vec::with_capacity(content.len() - 1);
+
+    for i in 1..(content.len()) {
+        let record: Vec<&str> = content[i].split(',').collect();
+
+        if record.len() != header.len() {
+            eprintln!("{}", "Record size is not matching with header size!".red().bold());
+            return ExitCode::FAILURE;
+        }
+
+        body.push(record);
+    }
+
+    println!("{:?}", header);
+
+    for record in body {
+        println!("{:?}", record);
     }
 
     ExitCode::SUCCESS
