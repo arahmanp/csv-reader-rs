@@ -1,4 +1,4 @@
-use std::{env, fs, process::ExitCode};
+use std::{env, fs, path::Path, process::ExitCode};
 use colored::Colorize;
 
 fn main() -> ExitCode {
@@ -10,6 +10,16 @@ fn main() -> ExitCode {
     }
 
     let path = &args[1];
+
+    let extension = Path::new(path)
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .unwrap_or("");
+
+    if extension != "csv" {
+        eprintln!("{}", "Invalid file type!".red().bold());
+        return ExitCode::FAILURE;
+    }
 
     let content = match fs::read_to_string(path) {
         Ok(s) => s,
