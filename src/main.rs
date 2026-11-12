@@ -1,4 +1,4 @@
-use std::{env, fs, path::Path, process::ExitCode};
+use std::{cmp, env, fs, path::Path, process::ExitCode};
 use colored::Colorize;
 
 fn main() -> ExitCode {
@@ -39,25 +39,48 @@ fn main() -> ExitCode {
     let content: Vec<&str> = content.lines().collect();
 
     let header: Vec<&str> = content[0].split(',').collect();
+    let n_column = header.len();
 
     let mut body: Vec<Vec<&str>> = Vec::with_capacity(content.len() - 1);
+
+    let mut column_len = vec![0; n_column];
 
     for i in 1..(content.len()) {
         let record: Vec<&str> = content[i].split(',').collect();
 
-        if record.len() != header.len() {
+        if record.len() != n_column {
             eprintln!("{}", "Record size is not matching with header size!".red().bold());
             return ExitCode::FAILURE;
+        }
+
+        for j in 0..n_column {
+            column_len[j] = cmp::max(column_len[j], record[j].len() + 2);
         }
 
         body.push(record);
     }
 
-    println!("{:?}", header);
+    print!("| ");
+
+    for i in 0..n_column {
+        let len = column_len[i];
+        print!("{:<len$}| ", header[i]);
+    }
+
+    println!();
 
     for record in body {
-        println!("{:?}", record);
+        print!("| ");
+
+        for i in 0..n_column {
+            let len = column_len[i];
+            print!("{:<len$}| ", record[i]);
+        }
+
+        println!();
     }
+
+    println!();
 
     ExitCode::SUCCESS
 }
