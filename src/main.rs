@@ -43,7 +43,8 @@ fn main() -> ExitCode {
 
     let mut body: Vec<Vec<&str>> = Vec::with_capacity(content.len() - 1);
 
-    let mut column_len = vec![0; n_column];
+    let mut table_width = 0;
+    let mut column_width = vec![0; n_column];
 
     for i in 1..(content.len()) {
         let record: Vec<&str> = content[i].split(',').collect();
@@ -54,33 +55,59 @@ fn main() -> ExitCode {
         }
 
         for j in 0..n_column {
-            column_len[j] = cmp::max(column_len[j], record[j].len() + 2);
+            column_width[j] = cmp::max(column_width[j], record[j].len() + 2);
         }
 
         body.push(record);
     }
 
+    for w in column_width.iter() {
+        table_width += w;
+    }
+
+    table_width += 2 * n_column - 1;
+
+    print!("+");
+
+    for _i in 0..table_width {
+        print!("-");
+    }
+
+    print!("+\n");
+
     print!("| ");
 
     for i in 0..n_column {
-        let len = column_len[i];
+        let len = column_width[i];
         print!("{:<len$}| ", header[i]);
     }
 
-    println!();
+    print!("\n+");
 
-    for record in body {
+    for _i in 0..table_width {
+        print!("-");
+    }
+
+    print!("+\n");
+
+    for record in body.iter() {
         print!("| ");
 
         for i in 0..n_column {
-            let len = column_len[i];
+            let len = column_width[i];
             print!("{:<len$}| ", record[i]);
         }
 
         println!();
     }
 
-    println!();
+    print!("+");
+
+    for _i in 0..table_width {
+        print!("-");
+    }
+
+    print!("+\n");
 
     ExitCode::SUCCESS
 }
