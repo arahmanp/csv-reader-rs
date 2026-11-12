@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 colored = "3"
+file-format = "0.29"
